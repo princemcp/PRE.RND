@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Newtonsoft.Json;
+using PRE.CONSOL.RND;
 using PRE.Entities.TD02;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
@@ -28,8 +29,8 @@ class Program
                     "} ";
 
             ApiMsgModel<userToken> xxx = JsonConvert.DeserializeObject<ApiMsgModel<userToken>>(data);
-            Program.loginTD02();
-            //Program.loginRMS();
+            //Program.loginTD02();
+            Program.loginRMS();
         }
         catch (Exception ex)
         {
@@ -51,8 +52,12 @@ class Program
         if (data.Status == "success")
         {
             ApiMsgModel<string> OrderInfo_GNCode = doGet<string>("/api/RMS/PRE_OrderInfo/OrderInfo_GNCode", "", data.data.token);
+            string stringData2 = JsonConvert.SerializeObject(new PRE_OrderInfoEntity() { orderID = "123", tableKey = 1 });
+            ApiMsgModel<PRE_OrderInfoEntity> _PRE_OrderInfoEntity = doPost<PRE_OrderInfoEntity>("/api/RMS/PRE_OrderInfo/Insert", stringData2, data.data.token);
         }
+
     }
+
     static void loginTD02()
     {
 
@@ -63,10 +68,10 @@ class Program
         //login
         string stringData = JsonConvert.SerializeObject(userdata);
         ApiMsgModel<userToken> data = doPost<userToken>("/api/Auth/login", stringData);
-        
+
         // data access
         if (data.Status == "success")
-        
+
         {
 
             // user data insert
@@ -113,7 +118,7 @@ class Program
 
 
             // user data get
-             usersEntity = new UsersEntity()
+            usersEntity = new UsersEntity()
             {
                 uID = 1
             };
@@ -216,42 +221,43 @@ class Program
     //    return str;
     //}
 
-}
 
-[DataContract]
-public class ApiMsgModel<T>
-{
-    [DataMember]
-    public string Status { get; set; }
-    [DataMember]
-    public string statusmsg { get; set; }
-    [DataMember]
-    public T data { get; set; }
-}
-[DataContract]
-public class userToken
-{
-    [DataMember]
-    public string token { get; set; }
-    [DataMember]
-    public string expiration { get; set; }
-    [DataMember]
-    public string username { get; set; }
-    [DataMember]
-    public string isAdmin { get; set; }
-    [DataMember]
-    public string userKey { get; set; }
-}
-public class Helps
-{
-    public static string GetErrorMsg(Exception ex)
+
+    [DataContract]
+    public class ApiMsgModel<T>
     {
-        return ex.Message;
+        [DataMember]
+        public string Status { get; set; }
+        [DataMember]
+        public string statusmsg { get; set; }
+        [DataMember]
+        public T data { get; set; }
     }
-}
+    [DataContract]
+    public class userToken
+    {
+        [DataMember]
+        public string token { get; set; }
+        [DataMember]
+        public string expiration { get; set; }
+        [DataMember]
+        public string username { get; set; }
+        [DataMember]
+        public string isAdmin { get; set; }
+        [DataMember]
+        public string userKey { get; set; }
+    }
+    public class Helps
+    {
+        public static string GetErrorMsg(Exception ex)
+        {
+            return ex.Message;
+        }
+    }
 
-public class LoginUser
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public class LoginUser
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
 }
